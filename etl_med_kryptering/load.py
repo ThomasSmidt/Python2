@@ -3,7 +3,7 @@
 Persists the transformed DataFrame as a CSV in Output_dir and as a table
 in MySQL, overwriting both on every run.
 
-Unlike iteration 1, values are AES-encrypted before they leave the
+values are AES-encrypted before they leave the
 process, so what hits disk and database is ciphertext. See security.py
 for why AES-GCM was chosen.
 """
@@ -52,11 +52,6 @@ def save_to_mysql(df, mysql_config: dict, database: str, table: str, key: bytes)
 
     Auto-creates the database, drops and recreates the table each run,
     and inserts through parameterized SQL (%s placeholders).
-
-    Columns are VARCHAR(255), not DOUBLE, because the values are Base64
-    tokens (longest is ~52 chars). That is the trade-off of cell-level
-    encryption: SQL can no longer do arithmetic or range queries, so the
-    analysis moves to Python after decryption.
     """
     if not table.isidentifier():
         raise ValueError(f"Unsafe table name: {table!r}")
