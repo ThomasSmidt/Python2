@@ -239,12 +239,7 @@ DataFramen sendes videre til `visualisering.py`.
 
 Nøglen er **aldrig hardcodet**. Ved første kørsel genereres en 32-byte AES-256-nøgle med
 `os.urandom()` og gemmes i `secret.key`. Filen er med i `.gitignore` og må aldrig
-committes. Nøglen kan i stedet leveres via en miljøvariabel, som har forrang — så ligger
-den ikke i samme mappe som de data den beskytter:
-
-```powershell
-$env:IRIS_AES_KEY = "<base64-kodet 32-byte nøgle>"
-```
+committes.
 
 Mister du `secret.key`, kan eksisterende krypteret data ikke længere læses — slet i så fald
 `Output_dir/` og databasetabellen, og kør pipelinen igen.

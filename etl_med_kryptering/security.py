@@ -14,9 +14,6 @@ from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 
 KEY_SIZE = 32  # AES-256; all three methods share this key material
 
-# Env var wins, so the key can come from the environment instead of a
-# file next to the data.  PowerShell: $env:IRIS_AES_KEY = "..."
-KEY_ENV_VAR = "IRIS_AES_KEY"
 KEY_FILE = "secret.key"
 
 
@@ -29,13 +26,6 @@ def load_or_create_key(key_file: str = KEY_FILE) -> bytes:
 
     Never hardcoded, and secret.key is in .gitignore.
     """
-    from_env = os.environ.get(KEY_ENV_VAR)
-    if from_env:
-        key = base64.urlsafe_b64decode(from_env)
-        if len(key) != KEY_SIZE:
-            raise ValueError(f"{KEY_ENV_VAR} must hold {KEY_SIZE} Base64-encoded bytes")
-        return key
-
     if os.path.exists(key_file):
         with open(key_file, "rb") as f:
             key = base64.urlsafe_b64decode(f.read().strip())
