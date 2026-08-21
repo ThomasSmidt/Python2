@@ -1,6 +1,7 @@
 requests
 wget
 pyspark
-pandas
+pandas>=2.1
 mysql-connector-python
 matplotlib
+cryptography

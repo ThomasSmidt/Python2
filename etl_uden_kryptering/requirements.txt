@@ -1,0 +1,6 @@
+requests
+wget
+pyspark
+pandas>=2.1
+mysql-connector-python
+matplotlib

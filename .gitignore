@@ -1,5 +1,9 @@
 venv/
+.venv/
 __pycache__/
 *.pyc
 Input_dir/
 Output_dir/
+
+# AES key - must never be committed
+secret.key

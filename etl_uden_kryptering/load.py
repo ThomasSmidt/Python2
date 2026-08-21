@@ -1,8 +1,7 @@
 """Load module.
 
-Takes the transformed data (as a pandas DataFrame) and persists it in
-two places: a CSV file in Output_dir, and a table in a MySQL database.
-Both overwrite whatever was there from a previous run.
+Persists the transformed DataFrame as a CSV in Output_dir and as a table
+in MySQL, overwriting both on every run.
 """
 
 import os
@@ -13,12 +12,11 @@ from config import COLUMN_NAMES
 
 
 def save_to_csv(df, original_filename: str, output_dir: str) -> str:
-    """Save the transformed DataFrame as CSV in output_dir.
+    """Save the DataFrame as CSV in output_dir.
 
-    The filename reuses the original source filename (never hardcoded)
-    with a "transform_" prefix, e.g. iris.csv -> transform_iris.csv.
-    Writing with mode="w" naturally overwrites any file left over from
-    a previous run.
+    Filename reuses the source name (never hardcoded) with a "transform_"
+    prefix: iris.csv -> transform_iris.csv. Writing overwrites the
+    previous run.
     """
     os.makedirs(output_dir, exist_ok=True)
     new_filename = f"transform_{original_filename}"
@@ -33,8 +31,7 @@ def _ensure_database(mysql_config: dict, database: str) -> None:
     conn = mysql.connector.connect(**mysql_config)
     try:
         cursor = conn.cursor()
-        # database name comes from our own config, not user input, but we
-        # still validate it to keep this safe against copy/paste mistakes.
+        # name comes from our own config, but validate anyway
         if not database.isidentifier():
             raise ValueError(f"Unsafe database name: {database!r}")
         cursor.execute(f"CREATE DATABASE IF NOT EXISTS `{database}`")
@@ -45,12 +42,10 @@ def _ensure_database(mysql_config: dict, database: str) -> None:
 
 
 def save_to_mysql(df, mysql_config: dict, database: str, table: str) -> None:
-    """Save the transformed DataFrame as a table in MySQL.
+    """Save the DataFrame as a table in MySQL.
 
-    - Auto-creates the database if it doesn't exist.
-    - Drops and recreates the table each run, so old data never lingers.
-    - Uses a parameterized INSERT (executemany with %s placeholders) so
-      row values are never interpolated directly into SQL text.
+    Auto-creates the database, drops and recreates the table each run,
+    and inserts through parameterized SQL (%s placeholders).
     """
     if not table.isidentifier():
         raise ValueError(f"Unsafe table name: {table!r}")
